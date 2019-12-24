@@ -1,4 +1,5 @@
 {
+  "homepage": "http://joshuazhu.github.io/todo-list-react",
   "name": "hooks-todos",
   "version": "0.1.0",
   "private": true,
@@ -11,10 +12,13 @@
     "react": "0.0.0-b53ea6ca0",
     "react-dom": "0.0.0-b53ea6ca0",
     "react-scripts": "3.3.0",
+    "serve": "^11.2.0",
     "styled-components": "^4.4.1",
     "uuid": "^3.3.3"
   },
   "scripts": {
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
@@ -34,5 +38,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "gh-pages": "^2.1.1"
   }
 }
