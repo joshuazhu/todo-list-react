@@ -61,7 +61,9 @@ This section has moved here: https://facebook.github.io/create-react-app/docs/ad
 
 ### Deployment
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
+This app is host on Github Pages
+
+`npm run deploy` to deploy to Github Pages
 
 ### `yarn build` fails to minify
 
