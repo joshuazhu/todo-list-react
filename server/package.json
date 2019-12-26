@@ -14,5 +14,4 @@
     "deploy": "./bin/deploy",
     "deploy:ci": "yarn run deploy -c"
   }
-
 }
