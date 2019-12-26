@@ -9,5 +9,9 @@
   },
   "devDependencies": {
     "serverless": "^1.60.4"
+  },
+  "scripts": {
+    "deploy": "./bin/deploy",
+    "deploy:ci": "yarn run deploy -c"
   }
 }

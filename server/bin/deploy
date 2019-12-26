@@ -1,0 +1,4 @@
+echo "AWS Account ID: $AWS_ACCOUNT_ID"
+
+echo "Deploying serverless..."
+./node_modules/.bin/sls deploy --region "$AWS_DEFAULT_REGION" --verbose --aws-s3-accelerate
