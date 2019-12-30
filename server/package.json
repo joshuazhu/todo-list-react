@@ -5,13 +5,19 @@
   "license": "MIT",
   "dependencies": {
     "apollo-server-lambda": "^2.9.14",
-    "graphql": "^14.5.8"
+    "aws-sdk": "^2.596.0",
+    "graphql": "^14.5.8",
+    "lodash": "^4.17.15",
+    "serverless-offline": "^5.12.1",
+    "uuid": "^3.3.3"
   },
   "devDependencies": {
+    "semistandard": "^14.2.0",
     "serverless": "^1.60.4"
   },
   "scripts": {
     "deploy": "./bin/deploy",
-    "deploy:ci": "yarn run deploy -c"
+    "deploy:ci": "yarn run deploy -c",
+    "lint": "semistandard"
   }
 }

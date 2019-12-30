@@ -4,6 +4,20 @@ service: apollo-lambda
 provider:
   name: aws
   runtime: nodejs12.x
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource:
+        - { "Fn::GetAtt": ["todoListTable", "Arn" ] }
+
+plugins:
+  - serverless-offline
 
 # resources
 resources: # CloudFormation template syntax from here on.
@@ -11,16 +25,16 @@ resources: # CloudFormation template syntax from here on.
     todoListTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: todoListTable
+        TableName: todos
         AttributeDefinitions:
           - AttributeName: userId
             AttributeType: S
-          - AttributeName: complete
+          - AttributeName: id
             AttributeType: S
         KeySchema:
           - AttributeName: userId
             KeyType: HASH
-          - AttributeName: complete
+          - AttributeName: id
             KeyType: RANGE
         ProvisionedThroughput:
           ReadCapacityUnits: 1
