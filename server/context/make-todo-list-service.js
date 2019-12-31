@@ -1,6 +1,10 @@
 const { DynamoDB } = require('aws-sdk');
-const { makeGetTodoLists } = require('../service/todo-list/index');
-const { makeCreatenewTodoItem } = require('../service/todo-list/make-create-new-todo-item');
+const {
+  makeGetTodoItem,
+  makeGetTodoLists,
+  makeUpdateTodoItem,
+  makeCreatenewTodoItem
+} = require('../service/todo-list/index');
 
 const makeTodoListServiceFromContext = () => {
   const todoListTable = 'todos';
@@ -10,9 +14,13 @@ const makeTodoListServiceFromContext = () => {
     }
   });
 
+  const getTodoItem = makeGetTodoItem({ todoListDocumentClient });
+  const updateTodoItem = makeUpdateTodoItem({ todoListDocumentClient, getTodoItem });
   return {
     getTodoList: makeGetTodoLists({ todoListDocumentClient }),
-    create: makeCreatenewTodoItem({ todoListDocumentClient })
+    create: makeCreatenewTodoItem({ todoListDocumentClient }),
+    get: getTodoItem,
+    update: updateTodoItem
   };
 };
 

@@ -19,10 +19,17 @@ const typeDefs = gql`
     echo: String
   }
 
-  input TodoItemInput {
+  input NewTodoItemInput {
     name: String!
     completed: Boolean
     userId: String!
+  }
+
+  input TodoItemInput {
+    userId: String!
+    id: String!
+    name: String
+    completed: Boolean
   }
 
   type Query {
@@ -32,7 +39,8 @@ const typeDefs = gql`
 
   type Mutation {
     todoListEcho(input: TodoListEchoInput!): TodoListEchoResponse
-    createNewTodoItem(input: TodoItemInput!): TodoItem
+    createNewTodoItem(input: NewTodoItemInput!): TodoItem
+    updateTodoItem(input: TodoItemInput!): TodoItem
   }
 `;
 
@@ -51,6 +59,11 @@ const resolvers = {
       const newTodoItem = get(args, 'input');
 
       return context.todoList.create(newTodoItem);
+    },
+    updateTodoItem: (root, args, context) => {
+      const updateTodoItem = get(args, 'input');
+
+      return context.todoList.update(updateTodoItem);
     }
   }
 };
