@@ -1,6 +1,28 @@
-const { ApolloServer, gql } = require('apollo-server-lambda');
+const { ApolloServer, gql, AuthenticationError } = require('apollo-server-lambda');
+const jwt = require('jsonwebtoken');
+const jwksClient = require('jwks-rsa');
 const get = require('lodash/get');
 const { makeTodoListServiceFromContext } = require('./context/make-todo-list-service');
+
+const client = jwksClient({
+  jwksUri: 'https://dev-de1a2iwi.au.auth0.com/.well-known/jwks.json'
+});
+
+function getKey (header, cb) {
+  client.getSigningKey(header.kid, (err, key) => {
+    if (err) {
+      return err;
+    }
+    var signingKey = key.publicKey || key.rsaPublicKey;
+    cb(null, signingKey);
+  });
+}
+
+const options = {
+  audience: 'fpAf2ROBWYllLh4YkWXeGN2hhZNszM86',
+  issuer: 'https://dev-de1a2iwi.au.auth0.com/',
+  algorithms: ['RS256']
+};
 
 // Construct a schema, using GraphQL schema language
 const typeDefs = gql`
@@ -48,22 +70,32 @@ const typeDefs = gql`
 const resolvers = {
   Query: {
     todoListHealthCheck: (root, args, context) => true,
-    todoLists: (root, args, context) => {
-      const userId = get(args, 'userId');
-      return context.todoList.getTodoList({ userId });
+    todoLists: async (root, args, context) => {
+      try {
+        const { userId } = await context.user;
+        return context.todoList.getTodoList({ userId });
+      } catch (e) {
+        throw new AuthenticationError('You must be logged in to do this');
+      }
     }
   },
   Mutation: {
     todoListEcho: (root, args) => ({ echo: args.input.echo }),
     createNewTodoItem: (root, args, context) => {
-      const newTodoItem = get(args, 'input');
-
-      return context.todoList.create(newTodoItem);
+      try {
+        const newTodoItem = get(args, 'input');
+        return context.todoList.create(newTodoItem);
+      } catch (e) {
+        throw new AuthenticationError('You must be logged in to do this');
+      }
     },
     updateTodoItem: (root, args, context) => {
-      const updateTodoItem = get(args, 'input');
-
-      return context.todoList.update(updateTodoItem);
+      try {
+        const updateTodoItem = get(args, 'input');
+        return context.todoList.update(updateTodoItem);
+      } catch (e) {
+        throw new AuthenticationError('You must be logged in to do this');
+      }
     }
   }
 };
@@ -71,8 +103,24 @@ const resolvers = {
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  context: {
-    todoList: makeTodoListServiceFromContext()
+  context: ({ event }) => {
+    const token = event.headers.authorization;
+    const user = new Promise((resolve, reject) => {
+      jwt.verify(token, getKey, options, (err, authenticatedUser) => {
+        if (err) {
+          return reject(err);
+        }
+        resolve({
+          userId: get(authenticatedUser, 'sub'),
+          email: get(authenticatedUser, 'email')
+        });
+      });
+    });
+
+    return {
+      todoList: makeTodoListServiceFromContext(),
+      user
+    };
   }
 });
 
