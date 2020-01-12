@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const jwksClient = require('jwks-rsa');
 const get = require('lodash/get');
 const { makeTodoListServiceFromContext } = require('./context/make-todo-list-service');
+const { makeUserServiceFromContext } = require('./context/make-user-service');
 
 const client = jwksClient({
   jwksUri: 'https://dev-de1a2iwi.au.auth0.com/.well-known/jwks.json'
@@ -54,6 +55,25 @@ const typeDefs = gql`
     completed: Boolean
   }
 
+  input UpdateUserInput {
+    userId: String
+    displayname: String
+    email: String
+    picture: String
+  }
+
+  type UpdateUserResponse {
+    userId: String
+    displayname: String
+    email: String
+    picture: String
+  }
+
+  type RegisterUserResponse {
+    userId: String
+    email: String
+  }
+
   type Query {
     todoListHealthCheck: Boolean!
     todoLists(userId: String!): [TodoItem]
@@ -63,6 +83,8 @@ const typeDefs = gql`
     todoListEcho(input: TodoListEchoInput!): TodoListEchoResponse
     createNewTodoItem(input: NewTodoItemInput!): TodoItem
     updateTodoItem(input: TodoItemInput!): TodoItem
+    updateUser(input: UpdateUserInput!): UpdateUserResponse
+    registerUser: RegisterUserResponse
   }
 `;
 
@@ -96,6 +118,22 @@ const resolvers = {
       } catch (e) {
         throw new AuthenticationError('You must be logged in to do this');
       }
+    },
+    updateUser: (root, args, context) => {
+      try {
+        const updateUser = get(args, 'input');
+        return context.userService.update(updateUser);
+      } catch (e) {
+        throw new AuthenticationError('You must be logged in to do this');
+      }
+    },
+    registerUser: async (root, args, context) => {
+      try {
+        const newUser = await context.user;
+        return context.userService.register(newUser);
+      } catch (e) {
+        throw new AuthenticationError('You must be logged in to do this');
+      }
     }
   }
 };
@@ -119,6 +157,7 @@ const server = new ApolloServer({
 
     return {
       todoList: makeTodoListServiceFromContext(),
+      userService: makeUserServiceFromContext(),
       user
     };
   }
