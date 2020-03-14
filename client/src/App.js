@@ -1,4 +1,4 @@
-import React, { useContext, useReducer } from 'react';
+import React, { useContext, useReducer, useState, useEffect } from 'react';
 import { TodoList } from './components/TodoList';
 import { TodosContext } from './context';
 import { todoReducer } from './reducer';
@@ -10,11 +10,14 @@ export default function App() {
   const [state, dispatch] = useReducer(todoReducer, initialState);
   const useAuth0 = () => useContext(Auth0Context);
 
-  const { isAuthenticated, loginWithRedirect, loading, user } = useAuth0();
+  const { isAuthenticated, loginWithRedirect, loading, user, getTokenSilently, getIdTokenClaims } = useAuth0();
 
   if (loading) {
     return <div>Loading...</div>;
   }
+
+  getTokenSilently().then(token => console.log('token', token))
+  getIdTokenClaims().then(token => console.log('token', token))
 
   return (
     <div>

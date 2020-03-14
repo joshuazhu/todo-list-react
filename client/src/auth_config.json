@@ -1,4 +1,5 @@
 {
   "domain": "dev-de1a2iwi.au.auth0.com",
-  "clientId": "fpAf2ROBWYllLh4YkWXeGN2hhZNszM86"
+  "clientId": "fpAf2ROBWYllLh4YkWXeGN2hhZNszM86",
+  "audience": "https://dev-de1a2iwi.au.auth0.com/api/v2/"
 }

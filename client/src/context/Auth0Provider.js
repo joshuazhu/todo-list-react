@@ -18,6 +18,7 @@ const DEFAULT_REDIRECT_CALLBACK = () =>
 
     useEffect(() => {
       const initAuth0 = async () => {
+        console.log('options', initOptions)
         const auth0FromHook = await createAuth0Client(initOptions);
         setAuth0(auth0FromHook);
 
