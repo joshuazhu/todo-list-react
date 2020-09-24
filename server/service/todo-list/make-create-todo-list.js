@@ -1,24 +1,25 @@
 const uuid = require('uuid');
 
-const makeCreatenewTodoItem = ({
+const makeCreateTodoList = ({
   todoListDocumentClient
 }) => async ({
   userId,
-  name
+  listName
 }) => {
-  const newTodoItem = {
+  const todoListId = uuid.v4();
+  const newTodoList = {
     userId,
-    name,
+    listName,
     completed: false,
-    id: uuid.v4()
+    id: todoListId
   };
 
   const params = {
-    Item: newTodoItem
+    Item: newTodoList
   };
 
   await todoListDocumentClient.put(params).promise();
   return newTodoItem;
 };
 
-module.exports = { makeCreatenewTodoItem };
+module.exports = { makeCreateTodoList };
