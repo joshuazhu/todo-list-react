@@ -1,30 +1,24 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import {
+  ApolloClient,
+  InMemoryCache,
+  ApolloProvider
+} from '@apollo/client'
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import "antd/dist/antd.css";
-import { Auth0Provider } from "./context/Auth0Provider";
-import config from "./auth_config.json";
-import history from "./utils/history";
 
-const onRedirectCallback = appState => {
-  history.push(
-    appState && appState.targetUrl
-      ? appState.targetUrl
-      : window.location.pathname
-  );
-};
+const client = new ApolloClient({
+  connectToDevTools: window !== 'undefined' && process.env.NODE_ENV !== 'production',
+  cache: new InMemoryCache(),
+  uri: process.env.REACT_APP_API_URL
+});
 
 ReactDOM.render(
-  <Auth0Provider
-    domain={config.domain}
-    client_id={config.clientId}
-    audience={config.audience}
-    redirect_uri={window.location.origin}
-    onRedirectCallback={onRedirectCallback}
-  >
+  <ApolloProvider client={client}>
     <App />
-  </Auth0Provider>
+  </ApolloProvider>
   , document.getElementById('root'));
 
 // If you want your app to work offline and load faster, you can change
